@@ -16,7 +16,7 @@ W repo w pliku `server.js` konfiguracja serwera _express_. Express server sprawd
 
 Folder _schema_ zawiera schema, czyli informację o tym, jakie są relacje w naszej bazie danych pomiędzy rekordami. Cała wiedza na temat naszej bazy danych, którą przekazujemy do GraphQL - najważniejsze jakie properties ma każdy object i w jaki sposób nasze obiekty są ze sobą powiązane (relations). W pliku _schema.js_ znajduje się schema dla następującej sytuacji w bazie danych (User'rzy są przyjaciółmi i każdy ma jakąś pracę i pozycję, będzimy odpytywali o te dane)
 
-![Schema](./img/Schema.jpg)
+![Schema](./img/Schema.JPG)
 
 Natomiast tak wyglądają properties:
 
