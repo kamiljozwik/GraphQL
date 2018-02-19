@@ -223,3 +223,6 @@ W przypadku update'owania rekordu możemy użyć PUT albo PATCH. PUT najpierw us
 
 ![Mutation](./img/Update.JPG)
 
+Przykad Query dla update:
+
+![Mutation](./img/UpdateQuery.JPG)
