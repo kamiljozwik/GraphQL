@@ -226,3 +226,54 @@ W przypadku update'owania rekordu możemy użyć PUT albo PATCH. PUT najpierw us
 Przykad Query dla update:
 
 ![Mutation](./img/UpdateQuery.JPG)
+
+## Drugi Projekt - [Lyrical](https://github.com/kamiljozwik/GraphQLCasts/tree/master/Lyrical-GraphQL)
+
+Projekt uwzględniający pracę z GraphQL na froncie - nie będzie nic robione na back-endzie. Na froncie aplikacja będzie wspierana przez ReactJS. W folderze _server_ znajduje się (już gotowy) nasz GraphQL backend. Pliki ze schema podzielone na mniejsze moduły.
+
+Na backendzie mamy GraphQL + Express + MongoDB (hostowany na [MongoLab](https://www.mlab.com)).
+
+W skrócie, w aplikacji tworzymy piosenki,a po otworzeniu każdej piosenki mamy jej tekst. Możemy dodawać tekst do tej piosenki - wiersz po wierszu. Możemy również "like'ować" pojedyncze wiersze dowolnej piosenki.
+
+Backend ustawiony tak, aby mieć dostęp do narzędzia GraphiQL. Tam klikając _Docs_ mamy zawsze automatycznie wygenerowaną dokumentację naszego backendu (na podstawie plików schema) - będą tam RootQueries, relacje oraz mutations. Na podstawie tych danych można tworzyć queries w panelu GraphiQL. Dane teraz zapisywane w MongoDB.
+
+### Client Side (Front)
+
+Schemat architektury aplikacji:
+
+![Mutation](./img/Proj2/Schemat.JPG)
+
+**Apollo Store** - (nazywane też: Apollo Client) komunikuje się bezpośrednio z serwerem GraphQL oraz przechowuje dane zwrócone przez ten serwer. Przechowuje wszystkie dane, które są dostępne na froncie aplikacji. Niezależne od frameworka jaki mamy na froncie.
+
+**Apollo Provider** - provider of data for React application. SPecyficzny dla danego frameworka. Bierze dane z Apollo Store i wstrzykuje do React'a. Tutaj najwięcej konfiguracji.
+
+Apollo Client'a i Apollo Provider definiujemy w pliku _client/index.js_. W plikach komentarze opisujące poszególne linie kodu.
+
+_Checklist_ dla GraphQL + React, dzięki której będziemy mieli dane z servera GraphQL w komponentach React'a:
+
+- Identify data required (wskazanie dokładnie jakie dane będziemy potrzebowali z serwera)
+- Write query in Graphiql (for practice) and in component file
+- Bond query + component
+- Access data!
+
+>Tip: w checkliscie nie ma informacji mówiącej o tym, aby sprawdzać, czy nasze query na pewno się wykonało - Apollo i GraphQL zajmuje się tym za nas.
+
+GraphQL queries wykonujemy przy pomocy bibiloteki `graphql-tag`. Importujemy ją w komponencie jako _gql_ (ogólna konwencja). Następnie nasze query wyglądają następująco (tylko definicja query - nie wykonanie):
+
+``` javascript
+// Używamy template strings (backticks)
+const query = gql`
+  {
+    songs {
+      id
+      title
+    }
+  }
+`;
+```
+
+W repo aplikacji query zostały przeniesione do osobnego pliku i następnie są importowane w komponencie.
+
+W linii 58 komponentu _SongList.js_, przy eksportowaniu komponentu, łączymy go z danymi GraphQL. Komponent w pierwszej kolejności renderuje się i pojawia się na stronie, następnie odpalane jest (są) query i gdy query się wykona i dostępne będą dane z serwera, komponent re-renderuje się z załadowanymi danymi. Dane są teraz dostępne w `this.props.data` komponentu. `.data` na propsach tworzone rpzez _graphql_ helper.
+
+Z tego powodu musimy poradzić sobie z czasem, gdy dane są ładowane, ponieważ wtedy pod `this.props.data` nie mamy żadnych danych. Mamy za to property `this.props.data.loading`, która jest ustawiona na `true`, gdy dne są jeszcze pobierane i zmieni się na `false`, gdy dane zostaną załadowane do komponenu i komponent się przeładuje.
