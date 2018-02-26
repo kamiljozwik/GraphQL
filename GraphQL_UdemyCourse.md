@@ -277,3 +277,29 @@ W repo aplikacji query zostały przeniesione do osobnego pliku i następnie są 
 W linii 58 komponentu _SongList.js_, przy eksportowaniu komponentu, łączymy go z danymi GraphQL. Komponent w pierwszej kolejności renderuje się i pojawia się na stronie, następnie odpalane jest (są) query i gdy query się wykona i dostępne będą dane z serwera, komponent re-renderuje się z załadowanymi danymi. Dane są teraz dostępne w `this.props.data` komponentu. `.data` na propsach tworzone rpzez _graphql_ helper.
 
 Z tego powodu musimy poradzić sobie z czasem, gdy dane są ładowane, ponieważ wtedy pod `this.props.data` nie mamy żadnych danych. Mamy za to property `this.props.data.loading`, która jest ustawiona na `true`, gdy dne są jeszcze pobierane i zmieni się na `false`, gdy dane zostaną załadowane do komponenu i komponent się przeładuje.
+
+#### Mutations
+
+**Dodawanie piosenki**
+
+W linii 40 pliku _songCreate.js_ mmy przykład mutaions -> dodawanie piosenki. W komentarzach wyjaśniowe jak wygląda składnia mutation. 
+
+Testując takie query w _GraphiQL_, możemy posłużyć się _Query Variables_. Są one dostępne w lewym dolnym rogu GraphiQL. Są to zmienne, które możemy zawrzeć w naszym query bądź mutation. Przykład mutation z GraphiQL i zmienną: 
+
+![Variables](./img/Proj2/Variables.JPG)
+
+Query variables definiujemy też w React, aby poprawnie pisać mutations w Componentach. Linia 17 w SongCreate.js
+
+> Uwaga: częstym problemem w Apollo jest fakt, iż po wykonaniu mutation, nowy rekord nie pojawia się w komponencie. W przypadku naszej aplikacji, po wejściu na główną stronę (i wykonaniu query, które pobiera aktualną listę piosenek), kliknięciu dodaj piosenkę i następnie kliknięciu Enter (wykonaniu mutation), wracamy do głównego ekranu i nie widzimy nowo dodanego rekordu. Musimy wymusić przeładowanie strony. Dzieje się tak, ponieważ na samym początku pobraliśmy już listę wszystkich piosenek z bazy danych do głównego ekranu i Apollo nie zrobi tego drugi raz - tzw. _warm Cache_
+
+![Variables](./img/Proj2/WarmCache.JPG)
+
+Aby rozwiązać ten problem, w pliku _SongCreate.js_ dodana linia 19. 
+
+**Usuwanie piosenki**
+
+Usuwanie piosenki poprzez mutaion w pliku _SongList.js_. Podobnie jak przy dodawaniu, po usunięciu nie pobierają się ponownie piosenki z bazy i usunięta piosenka ciągle jest widoczna na stronie - w linii 10 pokazane jak w inny sposób wykonać ponownie pobranie danych po wykonaniu mutation. Możemy tutaj skorzystać z `this.props.data.refetch()`, ponieważ mamy dostęp do `this.props.data`, nie w każdym komponencie będzie tak łatwo. Przy tworzeniu piosenki nie możemy skorzystać z tej opcji. 
+
+#### Fetching individual records
+
+Pobieranie pojedynczych rekordów (zamiast całej listy) wykonujemy podobnie jak dodawanie i usuwanie reordów - potrzebujemy query variable, która będzie _id_ recordu który chcemy pobrać. W naszej aplikacji query pobierania jednego rekordu znajduje się w pliku _queries/fetchSong.js_. Query to jest importowane w komponencie _SongDetail.js_. 
