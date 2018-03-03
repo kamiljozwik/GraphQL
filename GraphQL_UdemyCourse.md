@@ -303,3 +303,20 @@ Usuwanie piosenki poprzez mutaion w pliku _SongList.js_. Podobnie jak przy dodaw
 #### Fetching individual records
 
 Pobieranie pojedynczych rekordów (zamiast całej listy) wykonujemy podobnie jak dodawanie i usuwanie reordów - potrzebujemy query variable, która będzie _id_ recordu który chcemy pobrać. W naszej aplikacji query pobierania jednego rekordu znajduje się w pliku _queries/fetchSong.js_. Query to jest importowane w komponencie _SongDetail.js_. 
+
+
+#### React router with GraphQL
+
+W komponencie _SongDetail_ mamy informację o jednej pojedynczej piosence. O tym, która jest to piosenka (jakie ma _id_) informuje nas React Router. Konfiguracja w pliku _index.js_ folderu client. Mamy tam route z path `path="songs/:id" `. id podawane jako props do komponentu: `props.params.id`. 
+
+#### DataIdFromObject
+
+DataIdFromObject jest dodatkową konfiguracją, którą możemy dodać podczas tworzenia klienta apollo. W naszym projekcie jest to w pliku `client/index.js`, linia 14. Dzięki temu, każda pobrana data z GraphQL będzie na froncie identyfikowana przez jej _id_. Nie jest to domyślne zachowanie, musimy to manualnie wpisać w konfiguracji Apollo. Musimy teraz zawsze w naszych query pobierać również _id_ (co i tak jest dobrą praktyką, bo możemy id używać później jako _key_ gdy mapujemy listy w komponentach). Dzięki temu podejściu, teraz za kazdym razem gdy zrobimy na froncie update rekordu i zostanie to wysłane do bazy danych, na froncie komponent Reactowy zostanie re-renderowany. W poprzednich przypadkach opisanych wcześniej (np. w SongCreate.js mamy `refetchQueries`) wymuszaliśmy na dwa różne sposoby jak re-renderować komponent używający query GraphQL, teraz dzięki tej linii konfiguracyjnej, będzie to robiło się automatycznie, bo Apollo wie jak rozpoznać i odnaleźć w Reakcie zaktualizowanr rekordy w Apollo Cliecie (właśnie poprzez przypisywanie im _id_). To zjawisko opisane dokładniej w docs Apollo [na tej stronie](https://www.apollographql.com/docs/react/features/caching.html)
+
+#### Optymistics UI updates
+
+W naszej aplikacji, gdy klikamy na przycisk "Like", mamy delikatne opóźnienie od czasu kliknięcia, do czasu odświeżenia aktualnej liczby like'ów. Optimistic updates umożliwiają usunięcie tego laga. Optimistic updates działa na zasadzie przewidywania tego jaka odpowiedź wróci do nas z serwera po wykonaniu query i obrazowanie jej na froncie, zanim ta odpowedź fizycznie wróci z backendu. Gdy wróci i jednak będzie inna niż przewidziana, wtedy ponownie mamy re-render elementu.
+
+Optimistic updates zaimplementowane w _LyricList.js_ (linia 9).
+
+## Trzeci Projekt - [Auth](https://github.com/kamiljozwik/GraphQLCasts/tree/master/auth-graphql-starter)
